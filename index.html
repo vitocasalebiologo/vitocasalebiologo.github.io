@@ -237,7 +237,7 @@
       overflow: hidden;
     }
 
-    .qr-box canvas { display: block; }
+    .qr-box img, .qr-box canvas { display: block; }
 
     .qr-text { flex: 1; }
 
@@ -351,7 +351,7 @@
 
     <div class="qr-section">
       <div class="qr-box">
-        <canvas id="qr-canvas"></canvas>
+        <div id="qr-canvas"></div>
       </div>
       <div class="qr-text">
         <p class="qr-title">Condividi questa pagina</p>
@@ -371,17 +371,23 @@
       var label = document.getElementById('qr-url-label');
       if (label) label.textContent = url;
 
-      QRCode.toCanvas(document.getElementById('qr-canvas'), url, {
+      var qrBox = document.getElementById('qr-canvas');
+      qrBox.innerHTML = '';
+      var qr = new QRCode(qrBox, {
+        text: url,
         width: 76,
-        margin: 1,
-        color: { dark: '#1a1a18', light: '#faf9f7' }
+        height: 76,
+        colorDark: '#1a1a18',
+        colorLight: '#faf9f7',
+        correctLevel: QRCode.CorrectLevel.H
       });
 
       window.downloadQR = function () {
-        var c = document.getElementById('qr-canvas');
+        var img = qrBox.querySelector('img') || qrBox.querySelector('canvas');
+        if (!img) return;
         var a = document.createElement('a');
         a.download = 'vitocasale-qrcode.png';
-        a.href = c.toDataURL();
+        a.href = img.src || img.toDataURL();
         a.click();
       };
     })();
